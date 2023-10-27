@@ -71,7 +71,7 @@
 </script>
 
 <template>
-  <TemplateLayout :template_layout="template_layout">
+  <TemplateLayout :template_layout="vue_template_layout">
     <template #conteudo>
       <div id="div_mensagem" :class="vue_editar_tipo_de_usuario.mensagem_da_pagina ? '' : 'tag_oculta'">
         <span id="span_mensagem">{{vue_editar_tipo_de_usuario.mensagem_da_pagina}}</span>

@@ -71,7 +71,7 @@
 </script>
 
 <template>
-  <TemplateLayout :template_layout="template_layout">
+  <TemplateLayout :template_layout="vue_template_layout">
     <template #conteudo>
       <div id="div_mensagem" :class="vue_cadastre_se.mensagem_da_pagina ? '' : 'tag_oculta'">
         <span id="span_mensagem">{{vue_cadastre_se.mensagem_da_pagina}}</span>

@@ -23,7 +23,7 @@
 </script>
 
 <template>
-  <TemplateLayout :template_layout="template_layout">
+  <TemplateLayout :template_layout="vue_template_layout">
     <template #conteudo>
       <div id="div_pagina_inicial">
         <h1 id="h1_titulo_da_pagina">
