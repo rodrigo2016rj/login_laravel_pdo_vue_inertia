@@ -7,6 +7,7 @@
     <title inertia>{{config('app.name', 'Laravel')}}</title>
     @vite('resources/js/app.js')
     @inertiaHead
+    {{header('Cache-Control: no-store');}}
   </head>
   <body>
     @inertia

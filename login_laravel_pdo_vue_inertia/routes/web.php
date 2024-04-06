@@ -8,17 +8,6 @@ use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\EditarTipoDeUsuarioController;
 use App\Http\Controllers\ConfiguracoesController;
 
-/*
-  |--------------------------------------------------------------------------
-  | Web Routes
-  |--------------------------------------------------------------------------
-  |
-  | Here is where you can register web routes for your application. These
-  | routes are loaded by the RouteServiceProvider and all of them will
-  | be assigned to the "web" middleware group. Make something great!
-  |
- */
-
 /* Página Padrão */
 Route::get('/', [PaginaInicialController::class, 'carregar_pagina']);
 
