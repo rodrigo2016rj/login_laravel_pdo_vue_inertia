@@ -6,6 +6,8 @@ use App\Models\CadastreSeModel;
 use App\Models\Entidades\Usuario;
 use DateTime;
 use DateTimeZone;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ConfirmacaoDeConta;
 use Inertia\Inertia;
 
 final class CadastreSeController extends TemplateLayoutController{
@@ -298,6 +300,9 @@ final class CadastreSeController extends TemplateLayoutController{
     /* Criptografias */
     $senha = $this->criptografar_senha_do_usuario($senha);
 
+    /* Chave para operações via link (operação confirmar conta) */
+    $chave = $this->criar_chave_para_operacoes_via_link();
+
     /* Momento atual sem fuso horário, pois no banco de dados armazeno sem fuso horário (timezone) */
     $sem_fuso_horario = new DateTimeZone('GMT');
     $objeto_date_time = new DateTime('now', $sem_fuso_horario);
@@ -307,6 +312,7 @@ final class CadastreSeController extends TemplateLayoutController{
     $usuario->set_nome_de_usuario($nome_de_usuario);
     $usuario->set_email($email);
     $usuario->set_senha($senha);
+    $usuario->set_chave_para_operacoes_via_link($chave);
     $usuario->set_momento_do_cadastro($momento_atual);
     $usuario->set_sexo($sexo);
 
@@ -319,7 +325,15 @@ final class CadastreSeController extends TemplateLayoutController{
       $this->carregar_pagina(true);
       die;
     }else{
-      $mensagem = 'Seu cadastro foi realizado com sucesso.';
+      $valores_do_email['email'] = $email;
+      $valores_do_email['ip'] = $_SERVER['REMOTE_ADDR'];
+      $valores_do_email['pk_usuario'] = $array_resultado['pk_usuario'];
+      $valores_do_email['chave'] = $chave;
+
+      Mail::to($email)->send(new ConfirmacaoDeConta($valores_do_email));
+
+      $mensagem = 'Seu cadastro foi realizado com sucesso, confirme sua conta pelo link enviado';
+      $mensagem .= " para o seu e-mail ($email).";
       $sessao->put('mensagem_da_pagina_cadastre_se', $mensagem);
       $sessao->forget('backup_do_formulario_da_pagina_cadastre_se');
       $sessao->save();

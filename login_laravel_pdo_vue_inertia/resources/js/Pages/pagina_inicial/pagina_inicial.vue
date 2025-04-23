@@ -4,7 +4,8 @@
   
   export default{
     props: [
-      "template_layout"
+      "template_layout",
+      "pagina_inicial"
     ],
     components: {
       TemplateLayout,
@@ -14,17 +15,62 @@
       return{
         /* Propriedades obtidas dos controllers precisam ser recolocadas para prevenir o cache do inertia */
         vue_template_layout: this.template_layout,
+        vue_pagina_inicial: this.pagina_inicial,
         
         /* Propriedades novas e seus valores iniciais */
         endereco_do_arquivo_css: "/css/" + this.template_layout.visual_escolhido + "/pagina_inicial.css"
       }
-    }
+    },
+    mounted(){
+      const div_app_template = document.getElementById("div_app_template");
+      const div_mensagem = document.getElementById("div_mensagem");
+      const span_mensagem = document.getElementById("span_mensagem");
+      
+      /* O resize_observer é importante no Vue para detectar quando as larguras e alturas deixarão de ser automáticas. */
+      const resize_observer = new ResizeObserver(function(){
+        /* Enquanto as larguras e alturas forem automáticas não há como fazer ajustes, por isso retorna. */
+        var estilo_computado = window.getComputedStyle(div_app_template);
+        if(estilo_computado.height === "auto"){
+          return;
+        }
+        
+        /* Ajustando a div_mensagem para que cada linha de texto tenha mais ou menos mesmo tamanho. */
+        switch(this.vue_template_layout.visual_escolhido){
+          case "tema_sofisticado":
+            var estilo_computado = window.getComputedStyle(div_mensagem);
+            const largura_da_div_mensagem = parseInt(estilo_computado.width, 10);
+            
+            /* Elementos inline continuam com largura e altura automáticas, o uso de offsetWidth é necessário. */
+            const largura_do_span_mensagem = span_mensagem.offsetWidth;
+            const texto_da_mensagem = span_mensagem.innerText;
+            
+            let nova_largura = "0px";
+            if(largura_do_span_mensagem > largura_da_div_mensagem){
+              const quantidade_de_linhas = Math.ceil(largura_do_span_mensagem / largura_da_div_mensagem);
+              nova_largura = Math.ceil(texto_da_mensagem.length / quantidade_de_linhas) + "ex";
+            }else{
+              nova_largura = largura_do_span_mensagem + 1 + "px";
+            }
+            div_mensagem.style.whiteSpace = "normal";
+            div_mensagem.style.maxWidth = nova_largura;
+          break;
+        }
+        
+        /* Removendo o observer. */
+        resize_observer.unobserve(div_app_template);
+      }.bind(this));
+      
+      resize_observer.observe(div_app_template);
+    },
   }
 </script>
 
 <template>
   <TemplateLayout :template_layout="vue_template_layout">
     <template #conteudo>
+      <div id="div_mensagem" :class="vue_pagina_inicial.mensagem_da_pagina ? '' : 'tag_oculta'">
+        <span id="span_mensagem">{{vue_pagina_inicial.mensagem_da_pagina}}</span>
+      </div>
       <div id="div_pagina_inicial">
         <h1 id="h1_titulo_da_pagina">
           <span>Página Inicial</span>

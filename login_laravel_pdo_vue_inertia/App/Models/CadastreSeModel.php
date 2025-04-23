@@ -74,14 +74,15 @@ SQL;
     $pdo = DB::connection()->getPdo();
 
     $sql = <<<'SQL'
-INSERT INTO usuario (nome_de_usuario, email, senha, momento_do_cadastro, sexo) 
-VALUES (:nome_de_usuario, :email, :senha, :momento_do_cadastro, :sexo)
+INSERT INTO usuario (nome_de_usuario, email, senha, chave_para_operacoes_via_link, momento_do_cadastro, sexo) 
+VALUES (:nome_de_usuario, :email, :senha, :chave, :momento_do_cadastro, :sexo)
 SQL;
 
     $pdo_statement = $pdo->prepare($sql);
     $pdo_statement->bindValue(':nome_de_usuario', $usuario->get_nome_de_usuario(), PDO::PARAM_STR);
     $pdo_statement->bindValue(':email', $usuario->get_email(), PDO::PARAM_STR);
     $pdo_statement->bindValue(':senha', $usuario->get_senha(), PDO::PARAM_STR);
+    $pdo_statement->bindValue(':chave', $usuario->get_chave_para_operacoes_via_link(), PDO::PARAM_STR);
     $pdo_statement->bindValue(':momento_do_cadastro', $usuario->get_momento_do_cadastro(), PDO::PARAM_STR);
     $pdo_statement->bindValue(':sexo', $usuario->get_sexo(), PDO::PARAM_STR);
 
@@ -101,6 +102,7 @@ SQL;
       }
     }
 
+    $array_resultado['pk_usuario'] = $pdo->lastInsertId();
     return $array_resultado;
   }
 

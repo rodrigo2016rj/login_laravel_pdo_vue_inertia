@@ -15,6 +15,7 @@ Route::get('/', [PaginaInicialController::class, 'carregar_pagina']);
 Route::get('/pagina_inicial', [PaginaInicialController::class, 'carregar_pagina']);
 Route::post('/pagina_inicial/entrar', [PaginaInicialController::class, 'entrar']);
 Route::get('/pagina_inicial/sair', [PaginaInicialController::class, 'sair']);
+Route::get('/pagina_inicial/confirmar_conta', [PaginaInicialController::class, 'confirmar_conta']);
 
 /* Cadastre-se */
 Route::get('/cadastre-se', [CadastreSeController::class, 'carregar_pagina']);

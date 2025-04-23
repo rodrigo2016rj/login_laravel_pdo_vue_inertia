@@ -12,8 +12,8 @@ final class TemplateLayoutModel{
     $pdo = DB::connection()->getPdo();
 
     $sql = <<<'SQL'
-SELECT pk_usuario, nome_de_usuario, email, senha, momento_do_cadastro, fuso_horario, visual, tipo, 
-sexo, exibir_sexo_no_perfil, exibir_email_no_perfil 
+SELECT pk_usuario, nome_de_usuario, email, senha, chave_para_operacoes_via_link, momento_do_cadastro, 
+conta_confirmada, fuso_horario, visual, tipo, sexo, exibir_sexo_no_perfil, exibir_email_no_perfil 
 FROM usuario 
 WHERE nome_de_usuario = :nome_de_usuario
 SQL;
@@ -33,11 +33,11 @@ SQL;
     return $array_resultado;
   }
 
-  public function seleciona_senha_do_usuario_pelo_nome_de_usuario($nome_de_usuario){
+  public function seleciona_algumas_informacoes_do_usuario_pelo_nome_de_usuario($nome_de_usuario){
     $pdo = DB::connection()->getPdo();
 
     $sql = <<<'SQL'
-SELECT senha 
+SELECT email, senha, conta_confirmada 
 FROM usuario 
 WHERE nome_de_usuario = :nome_de_usuario
 SQL;
