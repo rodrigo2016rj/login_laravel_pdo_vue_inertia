@@ -7,8 +7,10 @@ use App\Models\Entidades\Usuario;
 use DateTime;
 use DateTimeZone;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use App\Mail\ConfirmacaoDeConta;
 use Inertia\Inertia;
+use Exception;
 
 final class CadastreSeController extends TemplateLayoutController{
 
@@ -325,17 +327,78 @@ final class CadastreSeController extends TemplateLayoutController{
       $this->carregar_pagina(true);
       die;
     }else{
+      $sessao->forget('backup_do_formulario_da_pagina_cadastre_se');
+
+      /* Obtendo valores da configuração deste sistema */
+      $mailer_smtp_username = config('mail.mailers.smtp.username');
+      $mailer_smtp_password = config('mail.mailers.smtp.password');
+
+      /* Validando valores da configuração deste sistema */
+      if($mailer_smtp_username === null){
+        $mensagem = 'Seu cadastro foi realizado com sucesso, porém houve um erro e não foi';
+        $mensagem .= " possível enviar o link de confirmação para o seu e-mail ($email).";
+        $mensagem .= ' Está faltando a configuração MAIL_USERNAME no arquivo .env deste sistema.';
+        $mensagem .= ' Informe o ocorrido aos responsáveis deste sistema.';
+        $sessao->put('mensagem_da_pagina_cadastre_se', $mensagem);
+        $sessao->save();
+        $this->carregar_pagina(true);
+        die;
+      }
+      if($mailer_smtp_username === ''){
+        $mensagem = 'Seu cadastro foi realizado com sucesso, porém houve um erro e não foi';
+        $mensagem .= " possível enviar o link de confirmação para o seu e-mail ($email).";
+        $mensagem .= ' Está faltando um valor para a configuração MAIL_USERNAME no arquivo .env';
+        $mensagem .= ' deste sistema. Informe o ocorrido aos responsáveis deste sistema.';
+        $sessao->put('mensagem_da_pagina_cadastre_se', $mensagem);
+        $sessao->save();
+        $this->carregar_pagina(true);
+        die;
+      }
+      if($mailer_smtp_password === null){
+        $mensagem = 'Seu cadastro foi realizado com sucesso, porém houve um erro e não foi';
+        $mensagem .= " possível enviar o link de confirmação para o seu e-mail ($email).";
+        $mensagem .= ' Está faltando a configuração MAIL_PASSWORD no arquivo .env deste sistema.';
+        $mensagem .= ' Informe o ocorrido aos responsáveis deste sistema.';
+        $sessao->put('mensagem_da_pagina_cadastre_se', $mensagem);
+        $sessao->save();
+        $this->carregar_pagina(true);
+        die;
+      }
+      if($mailer_smtp_password === ''){
+        $mensagem = 'Seu cadastro foi realizado com sucesso, porém houve um erro e não foi';
+        $mensagem .= " possível enviar o link de confirmação para o seu e-mail ($email).";
+        $mensagem .= ' Está faltando um valor para a configuração MAIL_PASSWORD no arquivo .env';
+        $mensagem .= ' deste sistema. Informe o ocorrido aos responsáveis deste sistema.';
+        $sessao->put('mensagem_da_pagina_cadastre_se', $mensagem);
+        $sessao->save();
+        $this->carregar_pagina(true);
+        die;
+      }
+
       $valores_do_email['email'] = $email;
       $valores_do_email['ip'] = $_SERVER['REMOTE_ADDR'];
       $valores_do_email['pk_usuario'] = $array_resultado['pk_usuario'];
       $valores_do_email['chave'] = $chave;
+      $mensagem_de_email = new ConfirmacaoDeConta($valores_do_email);
 
-      Mail::to($email)->send(new ConfirmacaoDeConta($valores_do_email));
+      try{
+        Mail::to($email)->send($mensagem_de_email);
+      }catch(Exception $excecao){
+        // Uma causa possível é configuração errada no arquivo .env
+        Log::error($excecao->getMessage());
+        $mensagem = 'Seu cadastro foi realizado com sucesso, porém houve um erro e não foi';
+        $mensagem .= " possível enviar o link de confirmação para o seu e-mail ($email).";
+        $mensagem .= ' Informe o ocorrido aos responsáveis deste sistema e peça para';
+        $mensagem .= ' eles consultarem o arquivo de log do sistema.';
+        $sessao->put('mensagem_da_pagina_cadastre_se', $mensagem);
+        $sessao->save();
+        $this->carregar_pagina(true);
+        die;
+      }
 
       $mensagem = 'Seu cadastro foi realizado com sucesso, confirme sua conta pelo link enviado';
       $mensagem .= " para o seu e-mail ($email).";
       $sessao->put('mensagem_da_pagina_cadastre_se', $mensagem);
-      $sessao->forget('backup_do_formulario_da_pagina_cadastre_se');
       $sessao->save();
       $this->carregar_pagina(true);
       die;

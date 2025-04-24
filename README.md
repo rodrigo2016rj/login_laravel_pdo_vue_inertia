@@ -42,13 +42,18 @@ composer install<br/>
 npm install</p>
 
 <p>Renomeie o arquivo .env.example para .env<br/>
-Gere a chave APP_KEY do arquivo .env pelo comando: php artisan key:generate</p>
+Gere a chave APP_KEY do arquivo .env pelo comando: php artisan key:generate<br/>
+Também é necessário que você configure neste arquivo, as configurações relacionadas ao envio SMTP de e-mails.<br/>
+Exemplo: Coloque os valores para MAIL_USERNAME e MAIL_PASSWORD conforme seu registro no https://mailtrap.io</p>
 
 <p>Ainda dentro do diretório login_laravel_pdo_vue_inertia execute os comandos:<br/>
+php artisan config:clear<br/>
+php artisan config:cache<br/>
 npm run build<br/>
 npm run dev</p>
 
-<p>Acesse o endereço http://localhost:80 em um navegador. Se tiver configurado SSL ou TLS, acesse o endereço https://localhost:80 em um navegador.</p>
+<p>Acesse o endereço http://localhost:80 em um navegador.<br/>
+Se tiver configurado SSL ou TLS, acesse o endereço https://localhost:80 em um navegador ao invés.</p>
 
 <br/>
 
